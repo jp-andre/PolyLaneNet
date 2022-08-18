@@ -2,6 +2,7 @@ import os
 import sys
 import random
 import logging
+import pathlib
 from time import time
 
 from PIL import Image
@@ -26,8 +27,10 @@ def run_inference(image_path):
     model = PolyRegression(**model_parameters)
     model.to(device)
 
-    loaded = torch.load("model.pt", map_location=device)
+    model_location = os.path.join(pathlib.Path(__file__).parent.resolve(), "model.pt")
+    loaded = torch.load(model_location, map_location=device)
     model.load_state_dict(loaded['model'])
+
     model.eval()
 
     return infer(model, image_path, device)
@@ -41,7 +44,7 @@ def infer(model, image_path: str, device = "cpu"):
     image = Image.open(image_path)
     tensor = transform(image)
     tensor = tensor.unsqueeze(0)
-    print("tensor shape", tensor.shape)
+    # print("tensor shape", tensor.shape)
 
     with torch.no_grad():
         tensor = tensor.to(device)
@@ -51,16 +54,17 @@ def infer(model, image_path: str, device = "cpu"):
         t = time() - t0
         print("Inference time", t)
 
-        print("Outputs:", outputs)
+        # print("Outputs:", outputs)
         outputs = model.decode(outputs, labels=None)
-        print("Decoded:", outputs)
+        # print("Decoded:", outputs)
+        return outputs
 
 
 def log_on_exception(exc_type, exc_value, exc_traceback):
     logging.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
 
 
-def main(path: str):
+def init():
     cfg = { "seed": 0 }
 
     # Set up seeds
@@ -79,9 +83,8 @@ def main(path: str):
         ],
     )
 
-    run_inference(path)
-
 
 if __name__ == "__main__":
     sys.excepthook = log_on_exception
-    main(sys.argv[1])
+    init()
+    run_inference(sys.argv[1])
