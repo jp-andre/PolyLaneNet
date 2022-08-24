@@ -1,8 +1,8 @@
 import yaml
 import torch
 
-import lib.models as models
-import lib.datasets as datasets
+import polylanetnet.lib.models as models
+import polylanetnet.lib.datasets as datasets
 
 
 class Config(object):
