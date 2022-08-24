@@ -11,7 +11,7 @@ import torch
 
 import torchvision.transforms as transforms
 
-from lib.models import PolyRegression
+from polylanenet.lib.models import PolyRegression
 
 def run_inference(image_path):
     # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")

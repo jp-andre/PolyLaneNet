@@ -10,8 +10,8 @@ import cv2
 import numpy as np
 import torch
 
-from lib.config import Config
-from utils.evaluator import Evaluator
+from polylanenet.lib.config import Config
+from polylanenet.utils.evaluator import Evaluator
 
 
 def test(model, test_loader, evaluator, exp_root, cfg, view, epoch, max_batches=None, verbose=True):

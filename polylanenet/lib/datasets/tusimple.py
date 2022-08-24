@@ -5,8 +5,8 @@ import random
 import numpy as np
 from tabulate import tabulate
 
-from utils.lane import LaneEval
-from utils.metric import eval_json
+from polylanenet.utils.lane import LaneEval
+from polylanenet.utils.metric import eval_json
 
 SPLIT_FILES = {
     'train+val': ['label_data_0313.json', 'label_data_0601.json', 'label_data_0531.json'],

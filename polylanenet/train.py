@@ -11,8 +11,8 @@ import numpy as np
 import torch
 
 from test import test
-from lib.config import Config
-from utils.evaluator import Evaluator
+from polylanenet.lib.config import Config
+from polylanenet.utils.evaluator import Evaluator
 
 
 def train(model, train_loader, exp_dir, cfg, val_loader, train_state=None):

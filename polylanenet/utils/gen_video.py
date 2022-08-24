@@ -4,7 +4,7 @@ import argparse
 import cv2
 from tqdm import tqdm
 
-from lib.config import Config
+from polylanenet.lib.config import Config
 
 
 def parse_args():

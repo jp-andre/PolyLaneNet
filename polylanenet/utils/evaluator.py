@@ -2,7 +2,7 @@ import sys
 
 import numpy as np
 
-from lib.datasets.lane_dataset import LaneDataset
+from polylanenet.lib.datasets.lane_dataset import LaneDataset
 
 EXPS_DIR = 'experiments'
 

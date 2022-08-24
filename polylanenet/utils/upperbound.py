@@ -4,8 +4,8 @@ import warnings
 import numpy as np
 from progressbar import progressbar
 
-from lib.config import Config
-from utils.evaluator import Evaluator
+from polylanenet.lib.config import Config
+from polylanenet.utils.evaluator import Evaluator
 
 warnings.simplefilter('ignore', np.RankWarning)
 

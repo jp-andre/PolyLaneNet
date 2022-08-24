@@ -224,7 +224,7 @@ class LaneDataset(Dataset):
 
 def main():
     import torch
-    from lib.config import Config
+    from polylanenet.lib.config import Config
     np.random.seed(0)
     torch.manual_seed(0)
     cfg = Config('config.yaml')
