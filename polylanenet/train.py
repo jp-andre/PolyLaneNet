@@ -163,10 +163,7 @@ def log_on_exception(exc_type, exc_value, exc_traceback):
     logging.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
 
 
-if __name__ == "__main__":
-    args = parse_args()
-    cfg = Config(args.cfg)
-
+def run_train(cfg):
     # Set up seeds
     torch.manual_seed(cfg['seed'])
     np.random.seed(cfg['seed'])
@@ -269,3 +266,9 @@ if __name__ == "__main__":
     eval_str, _ = evaluator.eval(label='{}_{}'.format(os.path.basename(args.exp_name), test_epoch))
 
     logging.info(eval_str)
+
+
+if __name__ == "__main__":
+    args = parse_args()
+    cfg = Config(args.cfg)
+    run_train(cfg)
