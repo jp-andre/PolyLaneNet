@@ -11,11 +11,12 @@ def list_all_deps():
     with open("requirements.txt") as f:
         return f.readlines()
 
+print("find_packages()=", find_packages())
 
 setup(
-    name="model_helpers",
+    name="PolyLaneNet",
     version="0.1",
     packages=find_packages(),
-    python_requires=">=3.9",
+    python_requires=">=3.7",
     install_requires=list_all_deps(),
 )
