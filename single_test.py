@@ -20,8 +20,7 @@ def load_image(image_path):
     return image
 
 
-def run_inference(image):
-    model, device = load_model()
+def run_inference(model, device, image):
     transform = transforms.ToTensor()
     tensor = transform(image)
     tensor = tensor.unsqueeze(0)
@@ -210,7 +209,8 @@ if __name__ == "__main__":
     sys.excepthook = log_on_exception
 
     image = load_image(sys.argv[1])
-    outputs = run_inference(image)
+    model, device = load_model()
+    outputs = run_inference(model, device, image)
     results = outputs[0][0]
     h, w, _ = image.shape
     offset, leftDistance, rightDistance, leftLane, rightLane, centerLane = find_left_right_lanes(results, w, h)
