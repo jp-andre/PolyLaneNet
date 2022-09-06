@@ -1,12 +1,9 @@
 import os
 import sys
-import random
 import logging
 import pathlib
-from time import time
 
 from PIL import Image
-import numpy as np
 import torch
 
 import torchvision.transforms as transforms
@@ -21,7 +18,8 @@ def run_inference(image_path):
     tensor = transform(image)
     tensor = tensor.unsqueeze(0)
 
-    return infer(model, tensor, device)
+    outputs = infer(model, tensor, device)
+    return outputs
 
 
 def load_model(device: str = None):
@@ -30,17 +28,29 @@ def load_model(device: str = None):
     else:
         device = torch.device(device)
 
+    # FIXME these two go together
+    # model_parameters = {
+    #     'num_outputs': 35, # (5 lanes) * (1 conf + 2 (upper & lower) + 4 poly coeffs)
+    #     'pretrained': True,
+    #     'backbone': 'resnet50',
+    #     'pred_category': False,
+    #     'curriculum_steps': [0, 0, 0, 0],
+    # }
+    # model_weights = 'model_tusimple_resnet50_2695.pt'
+
     model_parameters = {
         'num_outputs': 35, # (5 lanes) * (1 conf + 2 (upper & lower) + 4 poly coeffs)
         'pretrained': True,
-        'backbone': 'resnet50',
+        'backbone': 'efficientnet-b0',
         'pred_category': False,
         'curriculum_steps': [0, 0, 0, 0],
     }
+    model_weights = 'model_tusimple_2695.pt'
+
     model = PolyRegression(**model_parameters)
     model.to(device)
 
-    model_location = os.path.join(pathlib.Path(__file__).parent.resolve(), "model_2695_resnet50.pt")
+    model_location = os.path.join(pathlib.Path(__file__).parent.resolve(), model_weights)
     loaded = torch.load(model_location, map_location=device)
     model.load_state_dict(loaded['model'])
 
@@ -58,20 +68,10 @@ def infer(model, tensor, device):
         return outputs
 
 
-def init():
-    cfg = { "seed": 0 }
-
-    # Set up seeds
-    torch.manual_seed(cfg['seed'])
-    np.random.seed(cfg['seed'])
-    random.seed(cfg['seed'])
-
-
 def log_on_exception(exc_type, exc_value, exc_traceback):
     logging.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
 
 
 if __name__ == "__main__":
     sys.excepthook = log_on_exception
-    init()
     run_inference(sys.argv[1])
