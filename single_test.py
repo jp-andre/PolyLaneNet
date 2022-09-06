@@ -29,6 +29,15 @@ def run_inference(image):
     return outputs
 
 
+def fetch_model_weights(name):
+    url = 'https://collimator-devops-resources.s3.us-west-2.amazonaws.com/ml-demos/PolyLaneNet/' + name
+    homedir = os.environ['HOME']
+    cachefile = f"{homedir}/.cache/{name}"
+    if not os.path.exists(cachefile):
+        os.system(f"curl -o {cachefile} {url}")
+    os.system(f"ln -sf {cachefile} ./{name}")
+
+
 def load_model(device: str = None):
     if device is None:
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -43,6 +52,7 @@ def load_model(device: str = None):
         'curriculum_steps': [0, 0, 0, 0],
     }
     model_weights = 'model_tusimple_2695.pt'
+    fetch_model_weights(model_weights)
 
     model = PolyRegression(**model_parameters)
     model.to(device)
