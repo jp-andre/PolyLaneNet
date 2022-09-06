@@ -35,6 +35,8 @@ def fetch_model_weights(name):
     if not os.path.exists(cachefile):
         os.system(f"curl -o {cachefile} {url}")
     os.system(f"ln -sf {cachefile} ./{name}")
+    # model_location = os.path.join(pathlib.Path(__file__).parent.resolve(), model_weights)
+    return name
 
 
 def load_model(device: str = None):
@@ -51,12 +53,11 @@ def load_model(device: str = None):
         'curriculum_steps': [0, 0, 0, 0],
     }
     model_weights = 'model_tusimple_2695.pt'
-    fetch_model_weights(model_weights)
+    model_location = fetch_model_weights(model_weights)
 
     model = PolyRegression(**model_parameters)
     model.to(device)
 
-    model_location = os.path.join(pathlib.Path(__file__).parent.resolve(), model_weights)
     loaded = torch.load(model_location, map_location=device)
     model.load_state_dict(loaded['model'])
 
