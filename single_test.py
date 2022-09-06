@@ -168,7 +168,7 @@ def find_left_right_lanes(results, w: int, h: int):
 
 
 def draw_overlays(img, results):
-    h, w, _ = image.shape
+    h, w, _ = img.shape
     offset, leftDistance, rightDistance, leftLane, rightLane, centerLane = find_left_right_lanes(results, w, h)
 
     for current_point, next_point in zip(leftLane[:-1], leftLane[1:]):
