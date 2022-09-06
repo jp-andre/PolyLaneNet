@@ -114,12 +114,12 @@ def find_left_right_lanes(results, w: int, h: int):
         # We're looking for the start point that is the most to the bottom (closer to the car in Y)
         # and closest in X too.
         if xBottom < w//2 and yBottom > leftLaneY and xBottom > leftLaneX:
-            print("found new candidate left lane:", k)
+            # print("found new candidate left lane:", k)
             leftLaneX = xBottom
             leftLaneY = yBottom
             leftLane = points
         if xBottom > w//2 and yBottom > rightLaneY and xBottom < rightLaneX:
-            print("found new candidate right lane:", k)
+            # print("found new candidate right lane:", k)
             rightLaneX = xBottom
             rightLaneY = yBottom
             rightLane = points
