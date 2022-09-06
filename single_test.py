@@ -151,7 +151,45 @@ def find_left_right_lanes(results, w: int, h: int):
     offset = (rightDistance-leftDistance) / (area)
     print("Computed offset of the car relative to its lane:", offset)
 
-    return offset, leftLane, rightLane, centerLane
+    return offset, leftDistance, rightDistance, leftLane, rightLane, centerLane
+
+
+def draw_overlays(img, results):
+    h, w, _ = image.shape
+    offset, leftDistance, rightDistance, leftLane, rightLane, centerLane = find_left_right_lanes(results, w, h)
+
+    for current_point, next_point in zip(leftLane[:-1], leftLane[1:]):
+        img = cv2.line(img, tuple(current_point), tuple(next_point), color=(255, 0, 0), thickness=2)
+    for current_point, next_point in zip(rightLane[:-1], rightLane[1:]):
+        img = cv2.line(img, tuple(current_point), tuple(next_point), color=(255, 0, 255), thickness=2)
+    for current_point, next_point in zip(centerLane[:-1], centerLane[1:]):
+        img = cv2.line(img, tuple(current_point), tuple(next_point), color=(0, 0, 128), thickness=2)
+
+    cv2.putText(img,
+            "L: %.0f" % leftDistance,
+            (leftLane[-1][0], leftLane[-1][1] - 20),
+            fontFace=cv2.FONT_HERSHEY_DUPLEX,
+            fontScale=0.8,
+            color=(128, 0, 0),
+            thickness=2)
+
+    cv2.putText(img,
+                "R: %.0f" % rightDistance,
+                (rightLane[-1][0] - 200, rightLane[-1][1] - 20),
+                fontFace=cv2.FONT_HERSHEY_DUPLEX,
+                fontScale=0.8,
+                color=(128, 0, 128),
+                thickness=2)
+
+    cv2.putText(img,
+                "Offset %+d%%" % (offset*100),
+                (w // 2 - 100, h // 2 - 20),
+                fontFace=cv2.FONT_HERSHEY_DUPLEX,
+                fontScale=0.8,
+                color=(0, 255, 0),
+                thickness=2)
+
+    return img
 
 
 def log_on_exception(exc_type, exc_value, exc_traceback):
@@ -164,5 +202,8 @@ if __name__ == "__main__":
     image = load_image(sys.argv[1])
     outputs = run_inference(image)
     results = outputs[0][0]
-    offset, left, right, center = find_left_right_lanes(results, image.shape[0], image.shape[1])
-    print(offset)
+    h, w, _ = image.shape
+    offset, leftDistance, rightDistance, leftLane, rightLane, centerLane = find_left_right_lanes(results, w, h)
+    print("offset:", offset)
+    draw_overlays(image, results)
+    cv2.imwrite(f"{sys.argv[1]}.overlay.jpg", cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
