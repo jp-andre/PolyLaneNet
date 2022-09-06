@@ -7,3 +7,6 @@ config.yaml
 lib/nms/build/
 lib/nms/dist/
 workdir
+
+# Ignore pretrained models, they can be BIG
+*.pt
