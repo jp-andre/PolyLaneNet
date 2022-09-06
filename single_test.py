@@ -14,54 +14,48 @@ import torchvision.transforms as transforms
 from lib.models import PolyRegression
 
 def run_inference(image_path):
-    # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    device = torch.device("cpu")
+    model, device = load_model()
+
+    image = Image.open(image_path)
+    transform = transforms.ToTensor()
+    tensor = transform(image)
+    tensor = tensor.unsqueeze(0)
+
+    return infer(model, tensor, device)
+
+
+def load_model(device: str = None):
+    if device is None:
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    else:
+        device = torch.device(device)
 
     model_parameters = {
-    "num_outputs": 35, # (5 lanes) * (1 conf + 2 (upper & lower) + 4 poly coeffs)
-    "pretrained": True,
-    "backbone": 'efficientnet-b0',
-    "pred_category": False,
-    "curriculum_steps": [0, 0, 0, 0]
+        'num_outputs': 35, # (5 lanes) * (1 conf + 2 (upper & lower) + 4 poly coeffs)
+        'pretrained': True,
+        'backbone': 'resnet50',
+        'pred_category': False,
+        'curriculum_steps': [0, 0, 0, 0],
     }
     model = PolyRegression(**model_parameters)
     model.to(device)
 
-    model_location = os.path.join(pathlib.Path(__file__).parent.resolve(), "model.pt")
+    model_location = os.path.join(pathlib.Path(__file__).parent.resolve(), "model_2695_resnet50.pt")
     loaded = torch.load(model_location, map_location=device)
     model.load_state_dict(loaded['model'])
 
     model.eval()
 
-    return infer(model, image_path, device)
+    return model, device
 
 
-def infer(model, image_path: str, device = "cpu"):
-
-    transform = transforms.ToTensor()
-
-    # image = cv2.imread(image_path, cv2.IMREAD_COLOR)
-    image = Image.open(image_path)
-    tensor = transform(image)
-    tensor = tensor.unsqueeze(0)
-    # print("tensor shape", tensor.shape)
-
+def infer(model, tensor, device):
     with torch.no_grad():
         tensor = tensor.to(device)
 
-        t0 = time()
         outputs = model(tensor)
-        t = time() - t0
-        print("Inference time", t)
-
-        # print("Outputs:", outputs)
         outputs = model.decode(outputs, labels=None)
-        # print("Decoded:", outputs)
         return outputs
-
-
-def log_on_exception(exc_type, exc_value, exc_traceback):
-    logging.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
 
 
 def init():
@@ -72,16 +66,9 @@ def init():
     np.random.seed(cfg['seed'])
     random.seed(cfg['seed'])
 
-    # Set up logging
-    exp_root = "workdir"
-    logging.basicConfig(
-        format="[%(asctime)s] [%(levelname)s] %(message)s",
-        level=logging.INFO,
-        handlers=[
-            logging.FileHandler(os.path.join(exp_root, "test_log.txt")),
-            logging.StreamHandler(),
-        ],
-    )
+
+def log_on_exception(exc_type, exc_value, exc_traceback):
+    logging.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
 
 
 if __name__ == "__main__":
