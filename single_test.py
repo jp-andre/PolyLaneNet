@@ -149,7 +149,7 @@ def find_left_right_lanes(results, w: int, h: int):
     rightDistance = similaritymeasures.area_between_two_curves(centerLane, rightLane)
     area = leftDistance+rightDistance
     offset = (rightDistance-leftDistance) / (area)
-    print("Computed offset of the car relative to its lane:", offset)
+    # print("Computed offset of the car relative to its lane:", offset)
 
     return offset, leftDistance, rightDistance, leftLane, rightLane, centerLane
 
@@ -204,6 +204,10 @@ if __name__ == "__main__":
     results = outputs[0][0]
     h, w, _ = image.shape
     offset, leftDistance, rightDistance, leftLane, rightLane, centerLane = find_left_right_lanes(results, w, h)
-    print("offset:", offset)
+
+    print("Lane offset:", offset)
     draw_overlays(image, results)
-    cv2.imwrite(f"{sys.argv[1]}.overlay.jpg", cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
+
+    dstfile = sys.argv[1].replace(".jpg", "-lanes.jpg").replace(".png", "-lanes.png")
+    cv2.imwrite(dstfile, cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
+    print("Output written to", dstfile)
